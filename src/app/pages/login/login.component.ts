@@ -36,7 +36,11 @@ export class LoginComponent implements OnInit {
     });
     Swal.showLoading();
     this.authService.login(formulario.value).subscribe(
-      (data) => { Swal.close(); console.log(data); this.router.navigateByUrl('/home');  },
+      (data) => {
+        Swal.close(); console.log(data);
+        this.router.navigate(['/home']);
+        console.log('salio');
+      },
       (error: any) => {
         console.log(error.error.error.message );
         Swal.fire({

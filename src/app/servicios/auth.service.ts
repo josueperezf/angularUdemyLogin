@@ -33,15 +33,21 @@ export class AuthService {
       returnSecureToken: true
     };
     return this.http.post( `${this.url}:signInWithPassword?key=${this.apiKey}` , enviar).pipe(
-      map( (data: any) => { this.guardarToken(data.idToken); return data; } )
+      map( (data: any) => {this.guardarToken(data); return data; } )
     );
   }
   logout() {
     localStorage.removeItem('token');
   }
-  guardarToken(idToken: string) {
-    this.userToken = idToken;
+  guardarToken(token) {
+
+    this.userToken = token.idToken;
     localStorage.setItem('token', this.userToken);
+    const hoy = new Date();
+    hoy.setSeconds(token.expiresIn);
+    // expiresIn
+    localStorage.setItem('expira', hoy.getTime().toString());
+
   }
   leerToken() {
     if (localStorage.getItem('token') ) {
@@ -51,6 +57,17 @@ export class AuthService {
     }
   }
   estaAutenteticado(): boolean {
-    return this.userToken.length > 2;
+    if (this.userToken.length === 0) {
+      return false;
+    } else {
+      const expira = Number(localStorage.getItem('expira'));
+      const expiraDate = new Date();
+      expiraDate.setTime(expira);
+      if (expiraDate > new Date() ) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 }
